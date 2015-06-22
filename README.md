@@ -9,13 +9,39 @@ Swift extension for UIImageView. Help loading image asynchronously and store loc
 ![alt tag](https://raw.githubusercontent.com/dphans/DPImageCache/master/Screenshot.png)
 
 # How to use
+
+1. Import DPImageCache.swift
+
+
+2. Set default cache directory like this:
+
+``` swift
+let dirName = "cache"
+func createCacheDirectory() {
+        var fileMan = NSFileManager.defaultManager()
+        var cacheDir = (NSSearchPathForDirectoriesInDomains(
+            .DocumentDirectory,
+            .UserDomainMask, true)[0] as! NSString)
+            .stringByAppendingPathComponent(dirName)
+        if !fileMan.fileExistsAtPath(cacheDir) {
+            fileMan.createDirectoryAtPath(
+                cacheDir,
+                withIntermediateDirectories: false,
+                attributes: nil,
+                error: nil)
+        }
+    }
+```
+
+
+3. Simple code like this:
+
 ```swift
     var imgAddress = "http://blabla.com/blabla.png"
-    let cacheDirectoryName = "cache"
     imgView.setImageCacheWithAddress(
             imgAddress,
             placeHolderImage: UIImage(named: "placeHolderImage")!,
-            cacheDirName: cacheDirectoryName)
+            cacheDirName: dirName)
 ```
 
 # Contact
