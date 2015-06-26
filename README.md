@@ -2,7 +2,7 @@
 Swift extension for UIImageView. Help loading image asynchronously and store local file cache.
 
 # Features
-- Loading image asynchronously.
+- Load image asynchronously.
 - Cache local file-based.
 
 
