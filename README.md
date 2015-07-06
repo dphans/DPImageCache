@@ -18,8 +18,8 @@ Swift extension for UIImageView. Help loading image asynchronously and store loc
 ``` swift
 let dirName = "cache"
 func createCacheDirectory() {
-        var fileMan = NSFileManager.defaultManager()
-        var cacheDir = (NSSearchPathForDirectoriesInDomains(
+        let fileMan = NSFileManager.defaultManager()
+        let cacheDir = (NSSearchPathForDirectoriesInDomains(
             .DocumentDirectory,
             .UserDomainMask, true)[0] as! NSString)
             .stringByAppendingPathComponent(dirName)
@@ -37,7 +37,7 @@ func createCacheDirectory() {
 - Simple code like this:
 
 ```swift
-    var imgAddress = "http://blabla.com/blabla.png"
+    let imgAddress = "http://blabla.com/blabla.png"
     imgView.setImageCacheWithAddress(
             imgAddress,
             placeHolderImage: UIImage(named: "placeHolderImage")!,
