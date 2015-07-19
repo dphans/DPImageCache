@@ -8,15 +8,34 @@
 
 import UIKit
 
+class DPImageCache: NSObject {
+	static let CACHEPATH = "CACHE";
+	internal static func cleanCace() {
+		let cachePath = (NSSearchPathForDirectoriesInDomains(
+			.DocumentDirectory,
+			.UserDomainMask,
+			true)[0] as! NSString).stringByAppendingPathComponent(CACHEPATH)
+		let fileManage: NSFileManager = NSFileManager.defaultManager()
+		var allFiles: Array = fileManage.contentsOfDirectoryAtPath(cachePath, error: nil)!
+		for object in enumerate(allFiles) {
+			fileManage.removeItemAtPath(cachePath.stringByAppendingPathComponent(
+				object.element as! String),
+				error: nil)
+		}
+	}
+}
+
 extension UIImageView {
     
-    func setImageCacheWithAddress(imageAddress: String, placeHolderImage: UIImage, cacheDirName: String) {
-        
+    func setImageCacheWithAddress(imageAddress: String, placeHolderImage: UIImage) {
+		
+		CacheFileManage.checkCachePathOrCreateOne()
         var imageId = imageAddress.kf_MD5()
         var cacheDir = NSSearchPathForDirectoriesInDomains(
             .DocumentDirectory,
             .UserDomainMask, true)[0] as! NSString
-        var cachePath = cacheDir.stringByAppendingPathComponent(cacheDirName).stringByAppendingPathComponent(imageId)
+        var cachePath = cacheDir.stringByAppendingPathComponent(DPImageCache.CACHEPATH)
+			.stringByAppendingPathComponent(imageId)
         
         self.image = placeHolderImage
         let data = CacheFileManage.dataAtPath(cachePath)
@@ -28,19 +47,21 @@ extension UIImageView {
         
         if let url = NSURL(string: imageAddress) {
             var request = NSURLRequest(URL: url)
-            NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: {
-                (response: NSURLResponse!, result: NSData!, error: NSError!) -> Void in
-                if error != nil {
-                    self.image = placeHolderImage
-                    return
-                }
-                if let data = result {
-                    self.image = UIImage(data: data)
-                    data.writeToFile("\(cachePath)", atomically: true)
-                }
-            })
-        }
-        
+            NSURLConnection.sendAsynchronousRequest(
+				request,
+				queue: NSOperationQueue.mainQueue(),
+				completionHandler: {
+					(response: NSURLResponse!, result: NSData!, error: NSError!) -> Void in
+					if error != nil {
+						self.image = placeHolderImage
+						return
+					}
+					if let data = result {
+						self.image = UIImage(data: data)
+						data.writeToFile("\(cachePath)", atomically: true)
+					}
+			})
+		}
     }
     
     private class CacheFileManage {
@@ -54,14 +75,26 @@ extension UIImageView {
                 return nil
             }
         }
+		
+		private static func checkCachePathOrCreateOne() {
+			var fileMan = NSFileManager.defaultManager()
+			var cacheDir = (NSSearchPathForDirectoriesInDomains(
+				.DocumentDirectory,
+				.UserDomainMask, true)[0] as! NSString)
+				.stringByAppendingPathComponent(DPImageCache.CACHEPATH)
+			if !fileMan.fileExistsAtPath(cacheDir) {
+				fileMan.createDirectoryAtPath(
+					cacheDir,
+					withIntermediateDirectories: false,
+					attributes: nil,
+					error: nil)
+			}
+		}
+		
     }
-    
+	
 }
 
-/*
-String MD5 I found it here:
-https://github.com/onevcat/Kingfisher/blob/master/Kingfisher/String%2BMD5.swift
-*/
 extension String {
     func kf_MD5() -> String {
         if let data = self.dataUsingEncoding(NSUTF8StringEncoding) {
@@ -80,7 +113,6 @@ extension String {
     }
 }
 
-/** array of bytes, little-endian representation */
 func arrayOfBytes<T>(value:T, length:Int? = nil) -> [UInt8] {
     let totalBytes = length ?? (sizeofValue(value) * 8)
     var v = value
@@ -101,20 +133,15 @@ func arrayOfBytes<T>(value:T, length:Int? = nil) -> [UInt8] {
 }
 
 extension Int {
-    /** Array of bytes with optional padding (little-endian) */
     func bytes(_ totalBytes: Int = sizeof(Int)) -> [UInt8] {
         return arrayOfBytes(self, length: totalBytes)
     }
-    
 }
 
 extension NSMutableData {
-    
-    /** Convenient way to append bytes */
     func appendBytes(arrayOfBytes: [UInt8]) {
         self.appendBytes(arrayOfBytes, length: arrayOfBytes.count)
     }
-    
 }
 
 class HashBase {
@@ -151,14 +178,12 @@ func rotateLeft(v:UInt32, n:UInt32) -> UInt32 {
 }
 
 class MD5 : HashBase {
-    
-    /** specifies the per-round shift amounts */
+	
     private let s: [UInt32] = [7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
         5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
         4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
         6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21]
-    
-    /** binary integer part of the sines of integers (Radians) */
+	
     private let k: [UInt32] = [0xd76aa478,0xe8c7b756,0x242070db,0xc1bdceee,
         0xf57c0faf,0x4787c62a,0xa8304613,0xfd469501,
         0x698098d8,0x8b44f7af,0xffff5bb1,0x895cd7be,

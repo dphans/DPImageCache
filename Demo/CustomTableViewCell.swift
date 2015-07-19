@@ -16,8 +16,8 @@ class CustomTableViewCell: UITableViewCell {
     
     func setImageWithURL(imgAddress: String) {
         imgView.setImageCacheWithAddress(
-            imgAddress,
-            placeHolderImage: UIImage(named: "no_image")!, cacheDirName: AppDelegate.CACHE_DIR_NAME)
+			imgAddress,
+			placeHolderImage: UIImage(named: "no_image")!)
     }
     
     override func awakeFromNib() {
