@@ -44,6 +44,13 @@ func createCacheDirectory() {
             cacheDirName: dirName)
 ```
 
+- Clean cache files:
+
+```swift
+        DPImageCache.cleanCace()
+```
+
+
 # Contact
 www: http://dinophan.com
 email: baophan94@icloud.com
