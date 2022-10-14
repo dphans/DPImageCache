@@ -29,5 +29,5 @@ Swift extension for UIImageView. Help loading image asynchronously and store loc
 
 
 # Contact
-www: http://dinophan.com
+www: https://dphans.me
 email: baophan94@icloud.com
